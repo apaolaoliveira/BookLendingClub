@@ -23,15 +23,8 @@ namespace BookLendingClub.LoansModule
                 else
                     Interface.ColorfulMessage("\nYou need to have at least one friend to make a loan.", ConsoleColor.Red);
 
-                Interface.ColorfulMessage("\n\n<-'", ConsoleColor.Red);
                 return false;
             }
-            else { return true; }
-        }
-
-        public bool HasLoans()
-        {
-            if (list.Count == 0) { return false; }
             else { return true; }
         }
 
@@ -46,49 +39,42 @@ namespace BookLendingClub.LoansModule
             }
         }
 
-        public bool CanTakeMagazine(int friendId)
+        public bool kidHasMagazine(int friendId)
         {
-            bool friendWithMagazine = false;
+            bool kidHasMagazine = false; 
             
             foreach (Loans loan in list)
             {
                 if (loan.Friend.id == friendId) 
-                { 
-                    friendWithMagazine = true; 
-                    break;
-                }
-            }
-
-            return friendWithMagazine;
-        }
-
-        public void AddNewLoan(Loans loan)
-        {
-            list.Add(loan);
-            loan.id = idCounter;
-            increaseId();
-        }
-
-        public void RemoveLoan(int selectedId) 
-        { 
-            Loans loan = GetLoanId(selectedId);
-            list.Remove(loan); 
-        }
-
-        public Loans GetLoanId(int id)
-        {
-            Loans loan = null;
-
-            foreach (Loans loanAdded in list)
-            {
-                if (loanAdded.id == id)
                 {
-                    loan = loanAdded;
-                    break;
+                    if (loan.Status != "RETURNED")
+                    {
+                        kidHasMagazine = true; 
+                        break;
+                    }
                 }
             }
-            return loan;
-        }
 
+            return kidHasMagazine;
+        }     
+
+        public bool CanTakeMagazine(int magazineId)
+        {
+            bool CanTakeMagazine = true;
+
+            foreach (Loans loan in list)
+            {
+                if (loan.Magazine.id == magazineId)
+                {
+                    if (loan.Status != "RETURNED")
+                    {
+                        CanTakeMagazine = false;
+                        break;
+                    }
+                }
+            }
+
+            return CanTakeMagazine;
+        }
     }
 }

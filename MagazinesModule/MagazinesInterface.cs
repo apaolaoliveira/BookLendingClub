@@ -1,5 +1,4 @@
 ﻿using BookLendingClub.BoxesModule;
-using BookLendingClub.FriendsModule;
 using BookLendingClub.Share;
 
 namespace BookLendingClub.MagazinesModule
@@ -16,10 +15,7 @@ namespace BookLendingClub.MagazinesModule
 
             while (proceed)
             {
-                Console.Clear();
-                SetMenu("MAGAZINES' OPTIONS", "Add new magazine.", "View magazines' list.", "Edit magazines' information.", "Remove a magazine.", "Go back.");
-
-                int selectedOption = Convert.ToInt32(Console.ReadLine());
+                int selectedOption = SetMenu("magazines' options", "Add new magazine", "View magazines' list", "Edit magazines' information", "Remove a magazine", "Go back");
 
                 switch (selectedOption)
                 {
@@ -34,10 +30,7 @@ namespace BookLendingClub.MagazinesModule
 
         private void AddNewMagazine()
         {
-            Console.Clear();
-            ColorfulMessage(
-              "\n\tADD NEW MAGAZINE"
-            + "\n------------------------------\n", ConsoleColor.Cyan);
+            SetHeader("add new magazine");
 
             bool verifyBoxList = magazinesRepository.VerifyBoxList();
 
@@ -47,45 +40,39 @@ namespace BookLendingClub.MagazinesModule
                 return;
             }
 
-            ColorfulMessage("\nTitle:" + "\n→ ", ConsoleColor.Cyan);
-            string title = Console.ReadLine();
+            string title = SetStringField("Title:", ConsoleColor.Cyan);
 
-            ColorfulMessage("\nCollection:" + "\n→ ", ConsoleColor.Cyan);
-            string collection = Console.ReadLine();
+            string collection = SetStringField("Collection:", ConsoleColor.Cyan);
 
-            ColorfulMessage("\nEdition Number:" + "\n→ ", ConsoleColor.Cyan);
-            int editionNumber = Convert.ToInt32(Console.ReadLine());
+            int editionNumber = SetIntField("Edition Number:", ConsoleColor.Cyan);
 
-            ColorfulMessage("\nPublication Year:" + "\n→ ", ConsoleColor.Cyan);
-            int publicationYear = Convert.ToInt32(Console.ReadLine());
+            int publicationYear = SetIntField("Publication Year:", ConsoleColor.Cyan);
 
             boxesInterface.ViewBoxes();
 
-            ColorfulMessage("\n\nBox Number:" + "\n→ ", ConsoleColor.Cyan);
-            int selectedNumber = Convert.ToInt32(Console.ReadLine());
+            int selectedNumber = SetIntField("\nBox Number:", ConsoleColor.Cyan);
+            int newSelectedNumber = boxesRepository.isValidId(selectedNumber, boxesRepository);
 
-            Boxes boxNumber = boxesRepository.GetBoxesId(selectedNumber);
+            Boxes boxNumber = (Boxes)boxesRepository.GetId(newSelectedNumber, boxesRepository);
 
             Magazines newMagazine = new Magazines(magazinesRepository.idCounter, title, collection, editionNumber, publicationYear, boxNumber);
 
-            magazinesRepository.AddNewMagazine(newMagazine);
+            magazinesRepository.AddNewEntity(newMagazine);
 
             ColorfulMessage("\nNew magazine successfully added!", ConsoleColor.Green);
 
-            ColorfulMessage("\n\n<-'", ConsoleColor.Cyan);
-            Console.ReadLine();
+            SetFooter();
         }
 
         public void ViewMagazines()
         {
-            Console.Clear();
             ColorfulMessage("\n\tMAGAZINE'S LIST :)\n\n", ConsoleColor.Cyan);
 
             ColorfulMessage(" --------------------------------------------------------------------------------------------------------------- \n", ConsoleColor.Cyan);
             ColorfulMessage("| ID | TITLE                        | COLLECTION                   | EDITION | YEAR | BOX TAG       - COLOR     |\n", ConsoleColor.Cyan);
             ColorfulMessage(" --------------------------------------------------------------------------------------------------------------- \n", ConsoleColor.Cyan);
 
-            bool hasMagazines = magazinesRepository.HasMagazines();
+            bool hasMagazines = magazinesRepository.HasEntity();
 
             if (hasMagazines == true)
             {
@@ -96,160 +83,129 @@ namespace BookLendingClub.MagazinesModule
             }
             else
             {
-                ColorfulMessage("\n                          You don't have any magazine yet :(\n\n", ConsoleColor.Gray);
+                ColorfulMessage("\n                                      You don't have any magazine yet :(\n\n", ConsoleColor.Gray);
             }
             Console.Write(" ---------------------------------------------------------------------------------------------------------------");
 
-            ColorfulMessage("\n\n<-'", ConsoleColor.Cyan);
-            Console.ReadKey();
+            SetFooter();
         }
 
         private void EditMagazine()
         {
-            Console.Clear();
-            ColorfulMessage(
-                "\n\tEDIT MAGAZINE"
-              + "\n------------------------------\n", ConsoleColor.Cyan);
+            SetHeader("edit magazine");
 
-            bool hasMagazines = magazinesRepository.HasMagazines();
+            bool hasMagazines = magazinesRepository.HasEntity();
 
             if (hasMagazines == false)
             {
                 ColorfulMessage("\nYou don't have any magazine yet :(", ConsoleColor.Gray);
-                ColorfulMessage("\n\n<-'", ConsoleColor.Cyan);
-                Console.ReadKey();
+                SetFooter();
                 return;
             }
 
             ViewMagazines();
 
-            ColorfulMessage("\n\nEnter your magazine's ID:" + "\n→ ", ConsoleColor.Cyan);
-            int selectedId = Convert.ToInt32(Console.ReadLine());
+            int selectedId = SetIntField("\nEnter your magazine's ID:", ConsoleColor.Cyan);
 
-            while (selectedId <= 0 || selectedId > magazinesRepository.idCounter - 1)
-            {
-                ColorfulMessage("\nThis ID doesn't exist. Try again:" + "\n→ ", ConsoleColor.Red);
-                selectedId = Convert.ToInt32(Console.ReadLine());
-            }
+            int newSelectedId = magazinesRepository.isValidId(selectedId, magazinesRepository);
 
-            magazinesRepository.GetMagazineId(selectedId);
+            magazinesRepository.GetId(newSelectedId, magazinesRepository);
 
             ColorfulMessage("\nWhat information would you like to change?\n", ConsoleColor.Cyan);
 
-            ColorfulMessage(
-                  "\n[1] Title."
-                + "\n[2] Collection."
-                + "\n[3] Edition number."
-                + "\n[4] Publication Year."
-                + "\n[5] Box."
-                + "\n\n→ "
-                , ConsoleColor.Cyan);
-
-            int selectedChange = Convert.ToInt32(Console.ReadLine());
+            int selectedChange = SetIntField(
+                                   "\n[1] Title."
+                                 + "\n[2] Collection."
+                                 + "\n[3] Edition number."
+                                 + "\n[4] Publication Year."
+                                 + "\n[5] Box."
+                                 + "\n\n→ "
+                                 , ConsoleColor.Cyan);
 
             bool validOption = false;
 
             foreach (Magazines magazine in magazinesRepository.list)
             {
-                if (magazine.id == selectedId)
+                while (!validOption)
                 {
-                    while (!validOption)
+                    switch (selectedChange)
                     {
-                        switch (selectedChange)
-                        {
-                            case 1:
-                                ColorfulMessage("\nNew title:" + "\n→ ", ConsoleColor.Gray);
-                                string newTitle = Console.ReadLine();
+                        case 1:
+                            string newTitle = SetStringField("New title:", ConsoleColor.Gray);
+                            magazine.Title = newTitle;
 
-                                magazine.Title = newTitle;
+                            ColorfulMessage("\nTitle updated!", ConsoleColor.Green);
 
-                                ColorfulMessage("\nTitle updated!", ConsoleColor.Green);
-                                validOption = true;
-                                break;
-                            case 2:
-                                ColorfulMessage("\nNew collection:" + "\n→ ", ConsoleColor.Gray);
-                                string newCollection = Console.ReadLine();
+                            validOption = true;
+                            break;
+                        case 2:
+                            string newCollection = SetStringField("New collection:", ConsoleColor.Gray);
+                            magazine.Collection = newCollection;
 
-                                magazine.Collection = newCollection;
+                            ColorfulMessage("\nCollection updated!", ConsoleColor.Green);
 
-                                ColorfulMessage("\nCollection updated!", ConsoleColor.Green);
-                                validOption = true;
-                                break;
-                            case 3:
-                                ColorfulMessage("\nNew Edition Number:" + "\n→ ", ConsoleColor.Gray);
-                                int newEditionNumber = Convert.ToInt32(Console.ReadLine());
+                            validOption = true;
+                            break;
+                        case 3:
+                            int newEditionNumber = SetIntField("New Edition Number:", ConsoleColor.Gray);
+                            magazine.EditionNumber = newEditionNumber;
 
-                                magazine.EditionNumber = newEditionNumber;
+                            ColorfulMessage("\nEdition Number updated!", ConsoleColor.Green);
 
-                                ColorfulMessage("\nEdition Number updated!", ConsoleColor.Green);
-                                validOption = true;
-                                break;
-                            case 4:
-                                ColorfulMessage("\nNew Publication Year:" + "\n→ ", ConsoleColor.Gray);
-                                int newPublicationYear = Convert.ToInt32(Console.ReadLine());
+                            validOption = true;
+                            break;
+                        case 4:
+                            int newPublicationYear = SetIntField("New Publication Year:", ConsoleColor.Gray);
+                            magazine.PublicationYear = newPublicationYear;
 
-                                magazine.PublicationYear = newPublicationYear;
+                            ColorfulMessage("\nPublication Year updated!", ConsoleColor.Green);
 
-                                ColorfulMessage("\nPublication Year updated!", ConsoleColor.Green);
-                                validOption = true;
-                                break;
-                            case 5:
-                                ColorfulMessage("\nNew Box, enter the box Number:" + "\n→ ", ConsoleColor.Gray);
-                                int boxId = Convert.ToInt32(Console.ReadLine());
+                            validOption = true;
+                            break;
+                        case 5:
+                            int boxId = SetIntField("New Box, enter the number:", ConsoleColor.Gray);
+                            Boxes newBox = (Boxes)boxesRepository.GetId(boxId, boxesRepository);
+                            magazine.Box = newBox;
 
-                                Boxes newBox = boxesRepository.GetBoxesId(boxId);
-                                magazine.Box = newBox;
+                            ColorfulMessage("\nBox updated!", ConsoleColor.Green);
 
-                                ColorfulMessage("\nBox updated!", ConsoleColor.Green);
-                                validOption = true;
-                                break;
-                            default:
-                                ColorfulMessage("\nInvalid option selected! Try again:" + "\n→ ", ConsoleColor.Red);
-                                selectedChange = Convert.ToInt32(Console.ReadLine());
-                                break;
-                        }
-                        break;
+                            validOption = true;
+                            break;
+                        default:
+                            ColorfulMessage("\nInvalid option selected! Try again:" + "\n→ ", ConsoleColor.Red);
+                            selectedChange = Convert.ToInt32(Console.ReadLine());
+                            break;
                     }
+                    break;
                 }
             }
-            ColorfulMessage("\n\n<-'", ConsoleColor.Cyan);
-            Console.ReadKey();
+            SetFooter();
         }
 
         private void RemoveMagazine()
         {
-            Console.Clear();
-            ColorfulMessage(
-                "\n\nREMOVE MAGAZINE"
-              + "\n------------------------------\n", ConsoleColor.Cyan);
+            SetHeader("remove magazine");
 
-            bool hasMagazines = magazinesRepository.HasMagazines();
+            bool hasMagazines = magazinesRepository.HasEntity();
 
             if (hasMagazines == false)
             {
                 ColorfulMessage("\nYou don't have any magazine yet :(", ConsoleColor.Gray);
-                ColorfulMessage("\n\n<-'", ConsoleColor.Cyan);
-                Console.ReadKey();
+                SetFooter();
                 return;
             }
 
             ViewMagazines();
 
-            ColorfulMessage("\n\nEnter your magazine's ID:" + "\n→ ", ConsoleColor.Cyan);
-            int selectedId = Convert.ToInt32(Console.ReadLine());
+            int selectedId = SetIntField("\nEnter your magazine's ID:", ConsoleColor.Cyan);
 
-            while (selectedId <= 0 || selectedId > magazinesRepository.idCounter - 1)
-            {
-                ColorfulMessage("\nThis ID doesn't exist. Try again:" + "\n→ ", ConsoleColor.Red);
-                selectedId = Convert.ToInt32(Console.ReadLine());
-            }
+            int newSelectedId = magazinesRepository.isValidId(selectedId, magazinesRepository);
 
-            magazinesRepository.RemoveMagazine(selectedId);
+            magazinesRepository.RemoveEntity(newSelectedId, magazinesRepository);
 
             ColorfulMessage("\nMagazine sucessfuly removed!", ConsoleColor.Green);
 
-            ColorfulMessage("\n\n<-'", ConsoleColor.Cyan);
-            Console.ReadLine();
+            SetFooter();
         }
     }
 }

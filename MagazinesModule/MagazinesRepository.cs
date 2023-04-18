@@ -8,12 +8,6 @@ namespace BookLendingClub.MagazinesModule
     {
         public BoxesRepository boxesRepository = null;
 
-        public bool HasMagazines()
-        {
-            if (list.Count == 0) { return false; }
-            else { return true; }
-        }
-
         public bool VerifyBoxList()
         {
             if (boxesRepository.list.Count == 0)
@@ -23,34 +17,6 @@ namespace BookLendingClub.MagazinesModule
                 return true;
             } 
             else { return false; }
-        }
-
-        public void AddNewMagazine(Magazines magazine)
-        {
-            list.Add(magazine);
-            magazine.id = idCounter;
-            increaseId();
-        }
-
-        public void RemoveMagazine(int selectedId) 
-        { 
-            Magazines magazine = GetMagazineId(selectedId);
-            list.Remove(magazine); 
-        }
-
-        public Magazines GetMagazineId(int id)
-        {
-            Magazines magazine = null;
-
-            foreach (Magazines magazineAdded in list)
-            {
-                if (magazineAdded.id == id)
-                {
-                    magazine = magazineAdded;
-                    break;
-                }
-            }
-            return magazine;
         }
     }
 }

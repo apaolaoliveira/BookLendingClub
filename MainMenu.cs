@@ -29,11 +29,7 @@ namespace BookLendingClub
 
             while (proceed)
             {
-                Console.Clear();
-
-                SetMenu("MAIN MENU", "Friends.", "Boxes.", "Magazines.", "Loans.", "Exit.");
-
-                int selectedOption = Convert.ToInt32(Console.ReadLine());
+                int selectedOption = SetMenu("main menu", "Friends", "Boxes", "Magazines", "Loans", "Exit");
 
                 switch (selectedOption)
                 {

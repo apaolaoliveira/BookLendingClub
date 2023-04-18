@@ -1,7 +1,6 @@
 ﻿using BookLendingClub.FriendsModule;
 using BookLendingClub.MagazinesModule;
 using BookLendingClub.Share;
-using System.Globalization;
 
 namespace BookLendingClub.LoansModule
 {
@@ -19,10 +18,7 @@ namespace BookLendingClub.LoansModule
 
             while (proceed)
             {
-                Console.Clear();
-                SetMenu("LOANS' OPTIONS", "Add new loan.", "View loans' list.", "Edit loans' information.", "Remove a loan.", "Go back.");
-
-                int selectedOption = Convert.ToInt32(Console.ReadLine());
+                int selectedOption = SetMenu("loans' options", "Add new loan", "View loans' list", "Edit loans' information", "Remove a loan", "Go back");
 
                 switch (selectedOption)
                 {
@@ -37,93 +33,91 @@ namespace BookLendingClub.LoansModule
 
         private void AddNewLoan()
         {
-            Console.Clear();
-            ColorfulMessage(
-              "\n\nADD NEW LOAN"
-            + "\n------------------------------\n", ConsoleColor.Cyan);
+            SetHeader("add new loan");
 
             bool hasFriendsAndMagazines = loansRepository.HasFriendsAndMagazines();
 
             if (hasFriendsAndMagazines == false)
             {
-                Console.ReadKey();
+                SetFooter();
                 return;
             }
 
             friendsInterface.ViewFriends();
 
-            ColorfulMessage("\n\nFriend's id:" + "\n→ ", ConsoleColor.Cyan);
-            int friendId = Convert.ToInt32(Console.ReadLine());
+            int friendId = SetIntField("\nFriend's id:", ConsoleColor.Cyan);
+            int newfriendId = friendsRepository.isValidId(friendId, friendsRepository);
 
-            Friends friend = friendsRepository.GetFriendsId(friendId);
+            Friends friend = (Friends)friendsRepository.GetId(newfriendId, friendsRepository);
 
-            bool alreadyLoaned = loansRepository.CanTakeMagazine(friendId);
-
-            if (alreadyLoaned == true)
+            bool alreadyHasMagazine = loansRepository.kidHasMagazine(newfriendId);
+            if (alreadyHasMagazine == true)
             {
                 ColorfulMessage("\nThis friend has already got a magazine!", ConsoleColor.Gray);
-                ColorfulMessage("\n\n<-'", ConsoleColor.Cyan);
-                Console.ReadKey();
+                SetFooter();
                 return;
             }
 
             magazinesInterface.ViewMagazines();
 
-            ColorfulMessage("\n\nLoaned Magazine id:" + "\n→ ", ConsoleColor.Cyan);
-            int loanedMagazineId = Convert.ToInt32(Console.ReadLine());
+            int loanedMagazineId = SetIntField("\nLoaned Magazine id:", ConsoleColor.Cyan);
+            int newloanedMagazineId = magazinesRepository.isValidId(loanedMagazineId, magazinesRepository);
 
-            Magazines magazine = magazinesRepository.GetMagazineId(loanedMagazineId);
+            Magazines magazine = (Magazines)magazinesRepository.GetId(newloanedMagazineId, magazinesRepository);
 
-            ColorfulMessage("\nLoan date:" + "\n→ ", ConsoleColor.Cyan);
-            string loanDate = Console.ReadLine();
+            bool magazineIsLoaned = loansRepository.CanTakeMagazine(newloanedMagazineId);
+            if (magazineIsLoaned == false)
+            {
+                ColorfulMessage($"\nThis magazine is currently unavailable." +
+                                $"\nA friend has already borrowed it."
+                                , ConsoleColor.Gray);
+                SetFooter();
+                return;
+            }
 
-            ColorfulMessage("\nDue date:" + "\n→ ", ConsoleColor.Cyan);
-            string dueDate = Console.ReadLine();
+            string loanDate = SetStringField("Loan date:", ConsoleColor.Cyan);
+
+            string dueDate = SetStringField("Due date:", ConsoleColor.Cyan);
 
             ColorfulMessage("\nStatus:", ConsoleColor.Cyan);
-            ColorfulMessage(
-                    "\n[1] ON LOAN"
-                  + "\n[2] RETURNED"
-                  + "\n[3] LATE"
-                  + "\n\n→ "
-                   , ConsoleColor.Cyan);
-            int statusChoice = Convert.ToInt32(Console.ReadLine());
+
+            int statusChoice = SetIntField(
+                                 "\n[1] ON LOAN"
+                               + "\n[2] RETURNED"
+                               + "\n[3] LATE"
+                               , ConsoleColor.Cyan);
 
             string status = loansRepository.GetLoanStatus(statusChoice);
 
             Loans newLoan = new Loans(loansRepository.idCounter, friend, magazine, loanDate, dueDate, status);
 
-            loansRepository.AddNewLoan(newLoan);
+            loansRepository.AddNewEntity(newLoan);
 
             ColorfulMessage("\nNew loan successfully added!", ConsoleColor.Green);
-            ColorfulMessage("\n\n<-'", ConsoleColor.Cyan);
-            Console.ReadLine();
+            SetFooter();
         }
 
         private void ViewLoan()
         {
             Console.Clear();
 
-            ColorfulMessage(
-                    "\n[1] Daily view"
-                  + "\n[2] Monthly view"
-                  + "\n\n→ "
-            , ConsoleColor.Cyan);
-
-            int selectedOption = Convert.ToInt32(Console.ReadLine());
+            int selectedOption = SetIntField(
+                                   "\n[1] Daily view"
+                                 + "\n[2] Monthly view"
+                                 , ConsoleColor.Cyan);
 
             switch (selectedOption)
             {
                 case 1:
-
                     Console.Clear();
+
                     ColorfulMessage("\n\tDAILY VIEW - LOANS' LIST :)\n\n", ConsoleColor.Cyan);
 
                     ColorfulMessage(" ------------------------------------------------------------------------------------------------------- \n", ConsoleColor.Cyan);
                     ColorfulMessage("| ID | FRIEND                       | MAGAZINE                     | LOAN DATE  | DUE DATE   | STATUS   |\n", ConsoleColor.Cyan);
                     ColorfulMessage(" ------------------------------------------------------------------------------------------------------- \n", ConsoleColor.Cyan);
 
-                    bool hasLoans = loansRepository.HasLoans();
+                    bool hasLoans = loansRepository.HasEntity();
 
                     if (hasLoans == true)
                     {
@@ -139,21 +133,20 @@ namespace BookLendingClub.LoansModule
                     }
                     Console.Write(" -------------------------------------------------------------------------------------------------------");
 
-                    ColorfulMessage("\n\n<-'", ConsoleColor.Cyan);
-                    Console.ReadKey();
+                    SetFooter();
 
                     break;
 
                 case 2:
-
                     Console.Clear();
+
                     ColorfulMessage("\n\tMONTHLY VIEW - LOANS' LIST :)\n\n", ConsoleColor.Cyan);
 
                     ColorfulMessage(" ------------------------------------------------------------------------------------------------------- \n", ConsoleColor.Cyan);
                     ColorfulMessage("| ID | FRIEND                       | MAGAZINE                     | LOAN DATE  | DUE DATE   | STATUS   |\n", ConsoleColor.Cyan);
                     ColorfulMessage(" ------------------------------------------------------------------------------------------------------- \n", ConsoleColor.Cyan);
 
-                    bool hassLoans = loansRepository.HasLoans();
+                    bool hassLoans = loansRepository.HasEntity();
 
                     if (hassLoans == true)
                     {
@@ -168,174 +161,140 @@ namespace BookLendingClub.LoansModule
                     }
                     Console.Write(" -------------------------------------------------------------------------------------------------------");
 
-                    ColorfulMessage("\n\n<-'", ConsoleColor.Cyan);
-                    Console.ReadKey();
+                    SetFooter();
 
                     break;
 
                 default:
                     ColorfulMessage("\nInvalid option selected!", ConsoleColor.Red);
-                    ColorfulMessage("\n\n<-'", ConsoleColor.Red);
-                    Console.ReadKey();
+                    SetFooter();
                     return;
             }
         }
 
         private void EditLoan()
         {
-            Console.Clear();
-            ColorfulMessage(
-                "\n\nEDIT LOAN"
-              + "\n------------------------------\n", ConsoleColor.Cyan);
+            SetHeader("edit loan");
 
-            bool hasLoans = loansRepository.HasLoans();
+            bool hasLoans = loansRepository.HasEntity();
 
             if (hasLoans == false)
             {
                 ColorfulMessage("\nYou don't have any loan yet :(", ConsoleColor.Gray);
-                ColorfulMessage("\n\n<-'", ConsoleColor.Cyan);
-                Console.ReadKey();
+                SetFooter();
                 return;
             }
 
             ViewLoan();
 
-            ColorfulMessage("\n\nEnter the loan's ID:" + "\n→ ", ConsoleColor.Cyan);
-            int selectedId = Convert.ToInt32(Console.ReadLine());
+            int selectedId = SetIntField("\nEnter the loan's ID:", ConsoleColor.Cyan);
 
-            while (selectedId <= 0 || selectedId > loansRepository.idCounter - 1)
-            {
-                ColorfulMessage("\nThis ID doesn't exist. Try again:" + "\n→ ", ConsoleColor.Red);
-                selectedId = Convert.ToInt32(Console.ReadLine());
-            }
+            int newSelectedId = loansRepository.isValidId(selectedId, loansRepository);
 
-            loansRepository.GetLoanId(selectedId);
+            loansRepository.GetId(newSelectedId, loansRepository);
 
-            ColorfulMessage("\nWhat information would you like to change?\n", ConsoleColor.Cyan);
-
-            ColorfulMessage(
-              "\n[1] Friend"
-            + "\n[2] Magazine"
-            + "\n[3] Loan Date"
-            + "\n[4] Due Date"
-            + "\n[5] Status"
-            + "\n\n→ "
-                , ConsoleColor.Cyan);
-
-            int selectedChange = Convert.ToInt32(Console.ReadLine());
-
+            ColorfulMessage("\nWhat information would you like to change?", ConsoleColor.Cyan);
+                       
+            int selectedChange = SetIntField(
+                                   "\n[1] Friend"
+                                 + "\n[2] Magazine"
+                                 + "\n[3] Loan Date"
+                                 + "\n[4] Due Date"
+                                 + "\n[5] Status"
+                                 , ConsoleColor.Cyan);
+             
             bool validOption = false;
 
             foreach (Loans loan in loansRepository.list)
             {
-                if (loan.id == selectedId)
+                while (!validOption)
                 {
-                    while (!validOption)
+                    switch (selectedChange)
                     {
-                        switch (selectedChange)
-                        {
-                            case 1:
-                                ColorfulMessage("\nNew friend, enter the Id:" + "\n→ ", ConsoleColor.Gray);
-                                int newFriend = Convert.ToInt32(Console.ReadLine());
+                        case 1:
+                            int newFriend = SetIntField("New friend, enter the Id:", ConsoleColor.Gray);
 
-                                Friends friend = friendsRepository.GetFriendsId(newFriend);
+                            Friends friend = (Friends)friendsRepository.GetId(newFriend, friendsRepository);
 
-                                ColorfulMessage("\nFriend updated!", ConsoleColor.Green);
-                                validOption = true;
-                                break;
-                            case 2:
-                                ColorfulMessage("\nNew Magazine:" + "\n→ ", ConsoleColor.Gray);
-                                int newMagazine = Convert.ToInt32(Console.ReadLine());
+                            ColorfulMessage("\nFriend updated!", ConsoleColor.Green);
+                            validOption = true;
+                            break;
+                        case 2:
+                            int newMagazine = SetIntField("New Magazine:", ConsoleColor.Gray);
 
-                                Magazines magazines = magazinesRepository.GetMagazineId(newMagazine);
+                            Magazines magazines = (Magazines)magazinesRepository.GetId(newMagazine, magazinesRepository);
 
-                                ColorfulMessage("\nMagazine updated!", ConsoleColor.Green);
-                                validOption = true;
-                                break;
-                            case 3:
-                                ColorfulMessage("\nNew Loan Date:" + "\n→ ", ConsoleColor.Gray);
-                                string newLoanDate = Console.ReadLine();
+                            ColorfulMessage("\nMagazine updated!", ConsoleColor.Green);
+                            validOption = true;
+                            break;
+                        case 3:
+                            string newLoanDate = SetStringField("New Loan Date:", ConsoleColor.Gray);
+                            loan.LoanDate = newLoanDate;
 
-                                loan.LoanDate = newLoanDate;
+                            ColorfulMessage("\nLoan Date updated!", ConsoleColor.Green);
 
-                                ColorfulMessage("\nLoan Date updated!", ConsoleColor.Green);
-                                validOption = true;
-                                break;
-                            case 4:
-                                ColorfulMessage("\nNew Due Date:" + "\n→ ", ConsoleColor.Gray);
-                                string newDueDate = Console.ReadLine();
+                            validOption = true;
+                            break;
+                        case 4:
+                            string newDueDate = SetStringField("New Due Date:", ConsoleColor.Gray);
+                            loan.DueDate = newDueDate;
 
-                                loan.DueDate = newDueDate;
+                            ColorfulMessage("\nDue Date updated!", ConsoleColor.Green);
 
-                                ColorfulMessage("\nDue Date updated!", ConsoleColor.Green);
-                                validOption = true;
-                                break;
-                            case 5:
-                                ColorfulMessage("\nNew status:", ConsoleColor.Gray);
-                                ColorfulMessage(
-                                        "\n[1] ON LOAN"
-                                      + "\n[2] RETURNED"
-                                      + "\n[3] LATE"
-                                      + "\n\n→ "
-                                       , ConsoleColor.Cyan);
+                            validOption = true;
+                            break;
+                        case 5:
+                            ColorfulMessage("\nNew status:", ConsoleColor.Gray);
 
-                                int statusChoice = Convert.ToInt32(Console.ReadLine());
+                            int statusChoice = SetIntField(
+                                                 "\n[1] ON LOAN"
+                                               + "\n[2] RETURNED"
+                                               + "\n[3] LATE"
+                                               , ConsoleColor.Gray);
 
-                                string newStatus = loansRepository.GetLoanStatus(statusChoice);                                
+                            string newStatus = loansRepository.GetLoanStatus(statusChoice);
+                            loan.Status = newStatus;
 
-                                loan.Status = newStatus;
+                            ColorfulMessage("\nStatus updated!", ConsoleColor.Green);
 
-                                ColorfulMessage("\nStatus updated!", ConsoleColor.Green);
-                                validOption = true;
-                                break;
-                            default:
-                                ColorfulMessage("\nInvalid option selected! Try again:" + "\n→ ", ConsoleColor.Red);
-                                selectedChange = Convert.ToInt32(Console.ReadLine());
-                                break;
-                        }
-                        break;
+                            validOption = true;
+                            break;
+                        default:
+                            ColorfulMessage("\nInvalid option selected! Try again:" + "\n→ ", ConsoleColor.Red);
+                            selectedChange = Convert.ToInt32(Console.ReadLine());
+                            break;
                     }
+                    break;
                 }
+
             }
-            ColorfulMessage("\n\n<-'", ConsoleColor.Cyan);
-            Console.ReadKey();
+            SetFooter();
         }
 
         private void RemoveLoan()
         {
-            Console.Clear();
-            ColorfulMessage(
-                "\n\nREMOVE LOAN"
-              + "\n------------------------------\n", ConsoleColor.Cyan);
+            SetHeader("remove loan");
 
-            bool hasLoans = loansRepository.HasLoans();
+            bool hasLoans = loansRepository.HasEntity();
 
             if (hasLoans == false)
             {
                 ColorfulMessage("\nYou don't have any loan yet :(", ConsoleColor.Gray);
-                ColorfulMessage("\n\n<-'", ConsoleColor.Cyan);
-                Console.ReadKey();
+                SetFooter();
                 return;
             }
 
             ViewLoan();
 
-            ColorfulMessage("\nEnter the loan's ID:" + "\n→ ", ConsoleColor.Cyan);
-            int selectedId = Convert.ToInt32(Console.ReadLine());
+            int selectedId = SetIntField("\nEnter the loan's ID:", ConsoleColor.Cyan);
 
-            while (selectedId <= 0 || selectedId > loansRepository.idCounter - 1)
-            {
-                ColorfulMessage("\nThis ID doesn't exist. Try again:" + "\n→ ", ConsoleColor.Red);
-                selectedId = Convert.ToInt32(Console.ReadLine());
+            int newSelectedId = loansRepository.isValidId(selectedId, loansRepository);
 
-            }
-
-            friendsRepository.RemoveFriend(selectedId);
+            loansRepository.RemoveEntity(newSelectedId, loansRepository);
 
             ColorfulMessage("\nLoan sucessfully removed!", ConsoleColor.Green);
 
-            ColorfulMessage("\n\n<-'", ConsoleColor.Cyan);
-            Console.ReadLine();
+            SetFooter();
         }
     }
 }

@@ -1,10 +1,11 @@
 ﻿using BookLendingClub.FriendsModule;
 using BookLendingClub.MagazinesModule;
+using BookLendingClub.Share;
 using System.Collections;
 
 namespace BookLendingClub.LoansModule
 {
-    internal class Loans
+    internal class Loans : Entity
     {
         public Friends Friend { get; set; }
         public Magazines Magazine { get; set; }
@@ -12,11 +13,9 @@ namespace BookLendingClub.LoansModule
         public string DueDate { get; set; }
         public string Status { get; set; }
 
-        public int id;
-
-        public Loans(int id, Friends friend, Magazines magazine, string loanDate, string dueDate, string status)
+        public Loans(int loanId, Friends friend, Magazines magazine, string loanDate, string dueDate, string status)
         {
-            this.id = id;
+            id = loanId;
             Friend = friend;
             Magazine = magazine;
             LoanDate = loanDate;

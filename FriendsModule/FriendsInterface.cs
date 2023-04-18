@@ -2,7 +2,7 @@
 
 namespace BookLendingClub.FriendsModule
 {
-    public class FriendsInterface : Interface //Screen
+    public class FriendsInterface : Interface 
     {
         public FriendsRepository friendsRepository = null;
 
@@ -12,10 +12,7 @@ namespace BookLendingClub.FriendsModule
 
             while (proceed)
             {
-                Console.Clear();
-                SetMenu("FRIENDS' OPTIONS", "Add new friend.", "View friends' list.", "Edit friends' information.", "Remove a friend.", "Go back.");
-
-                int selectedOption = Convert.ToInt32(Console.ReadLine());
+                int selectedOption = SetMenu("Friends' options", "Add new friend", "View friends' list", "Edit friends' information", "Remove a friend", "Go back");
 
                 switch (selectedOption)
                 {
@@ -30,43 +27,34 @@ namespace BookLendingClub.FriendsModule
 
         private void AddNewFriend()
         {
-            Console.Clear();
-            ColorfulMessage(
-              "\n\tADD NEW FRIEND"
-            + "\n------------------------------\n", ConsoleColor.Cyan);
+            SetHeader("add new friend");
 
-            ColorfulMessage("\nName:" + "\n→ ", ConsoleColor.Cyan);
-            string name = Console.ReadLine();
+            string name = SetStringField("Name:", ConsoleColor.Cyan);
 
-            ColorfulMessage("\nGuardian:" + "\n→ ", ConsoleColor.Cyan);
-            string guardian = Console.ReadLine();
+            string guardian = SetStringField("Guardian:", ConsoleColor.Cyan);
 
-            ColorfulMessage("\nPhone:" + "\n→ ", ConsoleColor.Cyan);
-            string phone = Console.ReadLine();
+            string phone = SetStringField("Phone:", ConsoleColor.Cyan);
 
-            ColorfulMessage("\nAddress:" + "\n→ ", ConsoleColor.Cyan);
-            string address = Console.ReadLine();
+            string address = SetStringField("Address:", ConsoleColor.Cyan);
 
             Friends newfriend = new Friends(friendsRepository.idCounter, name, guardian, address, phone);
 
-            friendsRepository.AddNewFriend(newfriend);
+            friendsRepository.AddNewEntity(newfriend);
 
             ColorfulMessage("\nNew friend successfully added!", ConsoleColor.Green);
 
-            ColorfulMessage("\n\n<-'", ConsoleColor.Cyan);
-            Console.ReadLine();
+            SetFooter();
         }
 
         public void ViewFriends()
         {
-            Console.Clear();
             ColorfulMessage("\n\tFRIEND'S LIST :)\n\n", ConsoleColor.Cyan);
 
             ColorfulMessage(" ----------------------------------------------------------------------------------------------------------------- \n", ConsoleColor.Cyan);
             ColorfulMessage("| ID | NAME                         | GUARDIAN                     | ADDRESS                      | PHONE         |\n", ConsoleColor.Cyan);
             ColorfulMessage(" ----------------------------------------------------------------------------------------------------------------- \n", ConsoleColor.Cyan);
 
-            bool hasFriends = friendsRepository.HasFriends();
+            bool hasFriends = friendsRepository.HasEntity();
 
             if (hasFriends == true)
             {
@@ -77,149 +65,118 @@ namespace BookLendingClub.FriendsModule
             }
             else
             {
-                ColorfulMessage("\n                                       You don't have any friend yet :(\n\n", ConsoleColor.Gray);
+                ColorfulMessage("\n                                         You don't have any friend yet :(\n\n", ConsoleColor.Gray);
             }
             Console.Write(" -----------------------------------------------------------------------------------------------------------------");
 
-            ColorfulMessage("\n\n<-'", ConsoleColor.Cyan);
-            Console.ReadKey();
+            SetFooter();
         }
 
         private void EditFriend()
         {
-            Console.Clear();
-            ColorfulMessage(
-                "\n\nEDIT FRIEND"
-              + "\n------------------------------\n", ConsoleColor.Cyan);
+            SetHeader("edit friend");
 
-            bool hasFriends = friendsRepository.HasFriends();
+            bool hasFriends = friendsRepository.HasEntity();
 
             if (hasFriends == false)
             {
                 ColorfulMessage("\nYou don't have any friend yet :(", ConsoleColor.Gray);
-                ColorfulMessage("\n\n<-'", ConsoleColor.Cyan);
-                Console.ReadKey();
+                SetFooter();
                 return;
             }
 
             ViewFriends();
 
-            ColorfulMessage("\n\nEnter your friend's ID:" + "\n→ ", ConsoleColor.Cyan);
-            int selectedId = Convert.ToInt32(Console.ReadLine());
+            int selectedId = SetIntField("\nEnter your friend's ID:", ConsoleColor.Cyan);
 
-            while (selectedId <= 0 || selectedId > friendsRepository.idCounter - 1)
-            {
-                ColorfulMessage("\nThis ID doesn't exist. Try again:" + "\n→ ", ConsoleColor.Red);
-                selectedId = Convert.ToInt32(Console.ReadLine());
-            }
+            int newSelectedId = friendsRepository.isValidId(selectedId, friendsRepository);
 
-            friendsRepository.GetFriendsId(selectedId);
+            friendsRepository.GetId(newSelectedId, friendsRepository);
 
-            ColorfulMessage("\nWhat information would you like to change?\n", ConsoleColor.Cyan);
+            ColorfulMessage("\nWhat information would you like to change?", ConsoleColor.Cyan);
 
-            ColorfulMessage(
-                  "\n[1] Name"
-                + "\n[2] Guardian"
-                + "\n[3] Phone"
-                + "\n[4] Address"
-                + "\n\n→ "
-                , ConsoleColor.Cyan);
-
-            int selectedChange = Convert.ToInt32(Console.ReadLine());
+            int selectedChange = SetIntField(
+                                   "\n[1] Name"
+                                 + "\n[2] Guardian"
+                                 + "\n[3] Phone"
+                                 + "\n[4] Address\n", ConsoleColor.Cyan);
 
             bool validOption = false;
 
             foreach (Friends friend in friendsRepository.list)
             {
-                if (friend.id == selectedId)
+                while (!validOption)
                 {
-                    while (!validOption)
+                    switch (selectedChange)
                     {
-                        switch (selectedChange)
-                        {
-                            case 1:
-                                ColorfulMessage("\nNew name:" + "\n→ ", ConsoleColor.Gray);
-                                string newName = Console.ReadLine();
+                        case 1:
+                            string newName = SetStringField("New name:", ConsoleColor.Gray);
+                            friend.Name = newName;
 
-                                friend.Name = newName;
+                            ColorfulMessage("\nName updated!", ConsoleColor.Green);
 
-                                ColorfulMessage("\nName updated!", ConsoleColor.Green);
-                                validOption = true;
-                                break;
-                            case 2:
-                                ColorfulMessage("\nNew Guardian:" + "\n→ ", ConsoleColor.Gray);
-                                string newGuardian = Console.ReadLine();
+                            validOption = true;
+                            break;
+                        case 2:
+                            string newGuardian = SetStringField("New guardian:", ConsoleColor.Gray);
+                            friend.Guardian = newGuardian;
 
-                                friend.Guardian = newGuardian;
+                            ColorfulMessage("\nGuardian updated!", ConsoleColor.Green);
 
-                                ColorfulMessage("\nGuardian updated!", ConsoleColor.Green);
-                                validOption = true;
-                                break;
-                            case 3:
-                                ColorfulMessage("\nNew Phone:" + "\n→ ", ConsoleColor.Gray);
-                                string newPhone = Console.ReadLine();
+                            validOption = true;
+                            break;
+                        case 3:
+                            string newPhone = SetStringField("New phone:", ConsoleColor.Gray);
+                            friend.Phone = newPhone;
 
-                                friend.Phone = newPhone;
+                            ColorfulMessage("\nPhone updated!", ConsoleColor.Green);
 
-                                ColorfulMessage("\nPhone updated!", ConsoleColor.Green);
-                                validOption = true;
-                                break;
-                            case 4:
-                                ColorfulMessage("\nNew Address:" + "\n→ ", ConsoleColor.Gray);
-                                string newAddress = Console.ReadLine();
+                            validOption = true;
+                            break;
+                        case 4:
+                            string newAddress = SetStringField("New address:", ConsoleColor.Gray);
+                            friend.Address = newAddress;
 
-                                friend.Address = newAddress;
+                            ColorfulMessage("\nAddress updated!", ConsoleColor.Green);
 
-                                ColorfulMessage("\nAddress updated!", ConsoleColor.Green);
-                                validOption = true;
-                                break;
-                            default:
-                                ColorfulMessage("\nInvalid option selected! Try again:" + "\n→ ", ConsoleColor.Red);
-                                selectedChange = Convert.ToInt32(Console.ReadLine());
-                                break;
-                        }
-                        break;
+                            validOption = true;
+                            break;
+                        default:
+                            ColorfulMessage("\nInvalid option selected! Try again:" + "\n→ ", ConsoleColor.Red);
+                            selectedChange = Convert.ToInt32(Console.ReadLine());
+                            break;
                     }
+                    break;
+                
                 }
             }
-            ColorfulMessage("\n\n<-'", ConsoleColor.Cyan);
-            Console.ReadKey();
+            SetFooter();
         }
 
         private void RemoveFriend()
         {
-            Console.Clear();
-            ColorfulMessage(
-                "\n\nREMOVE FRIEND"
-              + "\n------------------------------\n", ConsoleColor.Cyan);
+            SetHeader("remove friend");
 
-            bool hasFriends = friendsRepository.HasFriends();
+            bool hasFriends = friendsRepository.HasEntity();
 
             if (hasFriends == false)
             {
                 ColorfulMessage("\nYou don't have any friend yet :(", ConsoleColor.Gray);
-                ColorfulMessage("\n\n<-'", ConsoleColor.Cyan);
-                Console.ReadKey();
+                SetFooter();
                 return;
             }
 
             ViewFriends();
 
-            ColorfulMessage("\n\nEnter your friend's ID:" + "\n→ ", ConsoleColor.Cyan);
-            int selectedId = Convert.ToInt32(Console.ReadLine());
+            int selectedId = SetIntField("\nEnter your friend's ID:", ConsoleColor.Cyan);
 
-            while (selectedId <= 0 || selectedId > friendsRepository.idCounter - 1)
-            {
-                ColorfulMessage("\nThis ID doesn't exist. Try again:" + "\n→ ", ConsoleColor.Red);
-                selectedId = Convert.ToInt32(Console.ReadLine());
-            }
+            int newSelectedId = friendsRepository.isValidId(selectedId, friendsRepository);
 
-            friendsRepository.RemoveFriend(selectedId);
+            friendsRepository.RemoveEntity(newSelectedId, friendsRepository);
 
             ColorfulMessage("\nBye, bye friend!", ConsoleColor.Green);
 
-            ColorfulMessage("\n\n<-'", ConsoleColor.Cyan);
-            Console.ReadLine();
+            SetFooter();
         }
     }
 }
