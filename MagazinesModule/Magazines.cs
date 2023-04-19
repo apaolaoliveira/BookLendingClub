@@ -1,6 +1,5 @@
 ﻿using BookLendingClub.BoxesModule;
 using BookLendingClub.Share;
-using System.Collections;
 
 namespace BookLendingClub.MagazinesModule
 {

@@ -16,10 +16,10 @@ namespace BookLendingClub.FriendsModule
 
                 switch (selectedOption)
                 {
-                    case 1: AddNewFriend(); break;
-                    case 2: ViewFriends(); break;
-                    case 3: EditFriend(); break;
-                    case 4: RemoveFriend(); break;
+                    case 1: AddNewFriend();  break;
+                    case 2: ViewFriends();   break;
+                    case 3: EditFriend();    break;
+                    case 4: RemoveFriend();  break;
                     case 5: proceed = false; break;
                 }
             }

@@ -16,10 +16,10 @@ namespace BookLendingClub.BoxesModule
 
                 switch (selectedOption)
                 {
-                    case 1: AddNewBox(); break;
-                    case 2: ViewBoxes(); break;
-                    case 3: EditBox(); break;
-                    case 4: RemoveBox(); break;
+                    case 1: AddNewBox();     break;
+                    case 2: ViewBoxes();     break;
+                    case 3: EditBox();       break;
+                    case 4: RemoveBox();     break;
                     case 5: proceed = false; break;
                 }
             }
@@ -128,9 +128,8 @@ namespace BookLendingClub.BoxesModule
                     }
                     break;
                 }
-
             }
-            SetFooter();
+              SetFooter();
         }
 
         private void RemoveBox()

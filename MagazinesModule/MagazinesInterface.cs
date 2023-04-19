@@ -20,10 +20,10 @@ namespace BookLendingClub.MagazinesModule
                 switch (selectedOption)
                 {
                     case 1: AddNewMagazine(); break;
-                    case 2: ViewMagazines(); break;
-                    case 3: EditMagazine(); break;
+                    case 2: ViewMagazines();  break;
+                    case 3: EditMagazine();   break;
                     case 4: RemoveMagazine(); break;
-                    case 5: proceed = false; break;
+                    case 5: proceed = false;  break;
                 }
             }
         }

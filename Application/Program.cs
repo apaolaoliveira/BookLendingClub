@@ -3,10 +3,10 @@ using BookLendingClub.FriendsModule;
 using BookLendingClub.LoansModule;
 using BookLendingClub.MagazinesModule;
 
-namespace BookLendingClub
+namespace BookLendingClub.Application
 {
-    internal class Program 
-    {   
+    internal class Program
+    {
         static void Main(string[] args)
         {
             // Boxes -------------------------------------------------------------
@@ -31,7 +31,7 @@ namespace BookLendingClub
             magazinesInterface.boxesInterface = boxInterface;
 
             // Loans -------------------------------------------------------------
-            LoansRepository loansRepository = new LoansRepository(); 
+            LoansRepository loansRepository = new LoansRepository();
             loansRepository.magazinesRepository = magazinesRepository;
             loansRepository.friendsRepository = friendsRepository;
 

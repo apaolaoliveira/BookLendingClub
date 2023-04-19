@@ -7,7 +7,7 @@ namespace BookLendingClub.FriendsModule
         public string Name { get; set; }
         public string Guardian { get; set; }
         public string Address { get; set; }
-        public string Phone { get; set; }
+        public string Phone { get; set; } 
 
         public Friends(int friendId, string name, string guardian, string address, string phone)
         {

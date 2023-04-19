@@ -13,6 +13,6 @@ namespace BookLendingClub.BoxesModule
             id = boxId;
             Color = color;
             Tag = tag;
-        }
+        } 
     }
 }

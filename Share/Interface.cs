@@ -12,7 +12,7 @@ namespace BookLendingClub.Share
             Console.ResetColor();
         }
 
-        public static int SetMenu (string title, string fieldOne, string fieldTwo, string fieldThree, string fieldFour, string fieldFive)
+        public static int SetMenu(string title, string fieldOne, string fieldTwo, string fieldThree, string fieldFour, string fieldFive)
         {
             Console.Clear();
 

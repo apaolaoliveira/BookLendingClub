@@ -1,5 +1,4 @@
-﻿using BookLendingClub.BoxesModule;
-using BookLendingClub.FriendsModule;
+﻿using BookLendingClub.FriendsModule;
 using BookLendingClub.MagazinesModule;
 using BookLendingClub.Share;
 

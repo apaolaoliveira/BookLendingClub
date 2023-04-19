@@ -4,7 +4,7 @@ using BookLendingClub.LoansModule;
 using BookLendingClub.MagazinesModule;
 using BookLendingClub.Share;
 
-namespace BookLendingClub
+namespace BookLendingClub.Application
 {
     internal class MainMenu : Interface
     {

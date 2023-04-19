@@ -22,10 +22,10 @@ namespace BookLendingClub.LoansModule
 
                 switch (selectedOption)
                 {
-                    case 1: AddNewLoan(); break;
-                    case 2: ViewLoan(); break;
-                    case 3: EditLoan(); break;
-                    case 4: RemoveLoan(); break;
+                    case 1: AddNewLoan();    break;
+                    case 2: ViewLoan();      break;
+                    case 3: EditLoan();      break;
+                    case 4: RemoveLoan();    break;
                     case 5: proceed = false; break;
                 }
             }

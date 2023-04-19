@@ -1,7 +1,6 @@
 ﻿using BookLendingClub.FriendsModule;
 using BookLendingClub.MagazinesModule;
 using BookLendingClub.Share;
-using System.Collections;
 
 namespace BookLendingClub.LoansModule
 {
